@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/mnt/nfs/homes/xuwang/42/inception_of_thing/p1","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
