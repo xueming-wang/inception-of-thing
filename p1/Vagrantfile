@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version {we support older styles for
+# backwards compatibility}. Please don't change it unless you know what
+# you're doing.
 Vagrant.configure("2") do |config|
     config.vm.box = "centos/7"
 
@@ -13,22 +17,28 @@ Vagrant.configure("2") do |config|
         vb.memory = "1024"
         vb.cpus = 1
       end
-      # master.vm.privision "shell", inline: <<-SHELL
+      master.vm.provision "shell", inline: <<-SHELL
+      curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="server" sh -s - 
+      echo $(sudo cat /var/lib/rancher/k3s/server/node-token) > /vagrant/token
+      SHELL
+    end
+    
 
       # SHELL
     end
   # ----------------------------second machine--------------------------------#
-    config.vm.define "xuwangSW" do |woker| 
-      woker.vm.hostname = "xuwangSW"
-      woker.vm.network "private_network", ip: "192.168.56.111"
-      woker.vm.provider "virtualbox" do |vb|
-        vb.name = "xuwangSW"
-        vb.memory = "1024"
-        vb.cpus = 1
+   
+    config.vm.define "xuwangSW" do |worker| 
+      worker.vm.hostname = "xuwangSW"
+      worker.vm.network "private_network", ip: "192.168.56.111"
+      worker.vm.provider "virtualbox" do |v|
+        v.name = "xuwangSW"
+        v.memory = 1024
+        v.cpus = 1
       end
-      # woker.vm.privision "shell", inline: <<-SHELL
-      
-      # SHELL
+      worker.vm.provision "shell", inline: <<-SHELL
+      curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" K3D_URL=https://192.168.56.110:6443 K3S_TOKEN=$(cat /vagrant/token) INSTALL_K3S_EXEC="server" sh -s -
+      SHELL
     end
 end
 
